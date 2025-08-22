@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados do Usuário (JS Puro)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .button-container { margin-bottom: 20px; }
+        .loading { font-style: italic; color: #555; }
+        .error { color: red; }
+        .data-list { list-style: none; padding: 0; }
+        .data-list li { margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Dados do Usuário</h1>
+        <div class="button-container">
+            <button id="fetchDataBtn">Obter Usuário Logado</button>
+        </div>
+
+        <div id="userDataDisplay">
+            </div>
+    </div>
+
+    <script>
+        document.getElementById('fetchDataBtn').addEventListener('click', async () => {
+            const displayArea = document.getElementById('userDataDisplay');
+            displayArea.innerHTML = '<p class="loading">Buscando dados...</p>';
+
+            try {
+                // Simulação da obtenção do token.
+                // Em um ambiente real, você usaria uma lógica para obter o token de login.
+                const token = 'SEU_TOKEN_AQUI'; // Substitua por sua lógica de autenticação
+
+                if (!token) {
+                    displayArea.innerHTML = '<p class="error">Token não encontrado. Por favor, faça o login.</p>';
+                    return;
+                }
+                
+                // Requisição para a API da Senior
+                const response = await fetch('https://api.senior.com.br/platform/users', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.statusText}`);
+                }
+
+                const userData = await response.json();
+                
+                // Exibição dos dados na tela
+                displayArea.innerHTML = `
+                    <h3>Informações do Usuário:</h3>
+                    <ul class="data-list">
+                        <li><strong>Nome Completo:</strong> ${userData.fullName}</li>
+                        <li><strong>Tenant:</strong> ${userData.tenant}</li>
+                    </ul>
+                `;
+
+            } catch (error) {
+                console.error('Falha ao obter os dados:', error);
+                displayArea.innerHTML = `<p class="error">Falha ao obter os dados: ${error.message}</p>`;
+            }
+        });
+    </script>
+
+</body>
+</html>
